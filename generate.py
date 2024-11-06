@@ -1,6 +1,13 @@
 from jinja2 import Environment, FileSystemLoader
 from service import Service
 import json
+import os
+
+
+
+path = './renders'
+if not os.path.exists(path):
+    os.makedirs(path)
 
 with open('inputs/tmc.json', 'r') as file:
     jsonData = json.load(file)
