@@ -103,6 +103,30 @@ app.put('/{{table.getName()}}', async (req, res) => {
         res.status(500).json({ error: 'Failed to update menu item' });
     }
 });
+
+
+async function delete{{table.getName()}}(filter) {
+    const result = await {{table.getName()}}.deleteOne(filter);
+    console.log(`${result.deletedCount} document(s) deleted`);
+    return result;
+}
+
+app.delete('/{{table.getName()}}', async (req, res) => {
+    const query = req.query;
+
+    if (query._id) {
+        query._id = new ObjectId(query._id);
+    }
+
+    try {
+        const result = await delete{{table.getName()}}(query);
+        res.status(200).json({ deletedCount: result.deletedCount });
+    } catch (error) {
+        console.log("Error: " + error);
+        res.status(500).json({ error: 'Failed to delete item' });
+    }
+});
+
 {%endfor%}
 
 app.listen(3000, () => {
