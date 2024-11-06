@@ -2,7 +2,7 @@
     "tables": [
         {
             "name": "MenuItems",
-            "fields":[
+            "fields": [
                 {
                     "name": "name",
                     "isRequired": true
@@ -22,7 +22,7 @@
         },
         {
             "name": "Orders",
-            "fields":[
+            "fields": [
                 {
                     "name": "accountId",
                     "isRequired": true
@@ -49,6 +49,53 @@
                     "name": "completed"
                 }
 
+            ]
+        },
+        {
+            "name": "Accounts",
+            "fields": [
+                {
+                    "name": "name",
+                    "isRequired": true
+                },
+                {
+                    "name": "email",
+                    "isRequired": true
+                },
+                {
+                    "name": "phone"
+                },
+                {
+                    "name": "password",
+                    "isRequired": true
+                },
+                {
+                    "name": "accessLevel"
+                },
+                {
+                    "name": "cart",
+                    "isRequired": true
+                }
+            ]
+        },
+        {
+            "name": "PickupLocation",
+            "fields": [
+                {
+                    "name": "address",
+                    "isRequired": true
+                },
+                {
+                    "name": "contactInfo",
+                    "isRequired": true
+                },
+                {
+                    "name": "name",
+                    "isRequired": true
+                },
+                {
+                    "name": "active"
+                }
             ]
         }
     ]
