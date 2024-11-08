@@ -2,6 +2,7 @@
     "tables": [
         {
             "name": "MenuItems",
+            "noDelete": true,
             "fields": [
                 {
                     "name": "name",
@@ -22,6 +23,7 @@
         },
         {
             "name": "Orders",
+            "noDelete": true,
             "fields": [
                 {
                     "name": "accountId",
@@ -53,6 +55,7 @@
         },
         {
             "name": "Accounts",
+            "noDelete": true,
             "fields": [
                 {
                     "name": "name",
@@ -80,6 +83,7 @@
         },
         {
             "name": "PickupLocation",
+            "noDelete": true,
             "fields": [
                 {
                     "name": "address",

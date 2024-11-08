@@ -104,7 +104,7 @@ app.put('/{{table.getName()}}', async (req, res) => {
     }
 });
 
-
+{%if not table.excludeDelete()%}
 async function delete{{table.getName()}}(filter) {
     const result = await {{table.getName()}}.deleteOne(filter);
     console.log(`${result.deletedCount} document(s) deleted`);
@@ -126,7 +126,7 @@ app.delete('/{{table.getName()}}', async (req, res) => {
         res.status(500).json({ error: 'Failed to delete item' });
     }
 });
-
+{%endif%}
 {%endfor%}
 
 app.listen(3000, () => {
