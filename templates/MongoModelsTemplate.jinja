@@ -1,0 +1,45 @@
+class TableObject{
+    constructor(data) {
+        this._id = data._id || null
+    }
+
+    convertToDict(){
+        return {_id : this._id}
+    }
+
+    getPostDict(){
+        const postDict = this.convertToDict()
+        // we dont want to post ids to the database
+        delete postDict._id
+        return postDict
+    }
+}
+
+{%for table in Service.getTables()%}
+class {{table.getName()}} extends TableObject{
+    constructor(data) {
+        super(data)
+        this._id = data._id || null;
+        {%for field in table.getFields()%}this.{{field.getName()}} = data.{{field.getName()}} || {{field.getDefault()}};
+        {%endfor%}
+    }
+
+    hasRequiredPostFields(){
+        return {%for field in table.getRequiredFields()%}this.{{field.getName()}} != {{field.getDefault()}}{% if not loop.last %} && {% endif %}{%endfor%}
+    }
+
+    convertToDict(){
+        return {
+            _id : this._id, {%for field in table.getFields()%}
+            {{field.getName()}} :  this.{{field.getName()}}{% if not loop.last %}, {% endif %}{%endfor%}
+            
+        }
+    }
+}
+{%endfor%}
+
+
+module.exports = {
+    {%for table in Service.getTables()%}{{table.getName()}}{% if not loop.last %}, {% endif %}
+    {%endfor%}
+}

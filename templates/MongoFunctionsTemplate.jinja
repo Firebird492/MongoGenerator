@@ -1,4 +1,5 @@
 const { MongoClient, ServerApiVersion, ObjectId  } = require("mongodb");
+const { {%for table in Service.getTables()%}{{table.getName()}}{% if not loop.last %}, {% endif %}{%endfor%} } = require("./models.js")
 const cors = require('cors');
 require('dotenv').config();
 const express = require('express');
@@ -28,27 +29,27 @@ if (!database) {
 // get to mongo connection
 const myDB = client.db(database);
 {%for table in Service.getTables()%}
-const {{table.getName()}} = myDB.collection("{{table.getName()}}");{%endfor%}
+const {{table.getPluralName()}} = myDB.collection("{{table.getPluralName()}}");{%endfor%}
 
 {%for table in Service.getTables()%}
 
-async function post{{table.getName()}}(body){
-    const result = await {{table.getName()}}.insertOne(body);
+async function post{{table.getPluralName()}}(body){
+    const result = await {{table.getPluralName()}}.insertOne(body);
     console.log(
-        `new item in {{table.getName()}} created with the _id: ${result.insertedId}`,
+        `new item in {{table.getPluralName()}} created with the _id: ${result.insertedId}`,
     );
     return result.insertedId
 }
 
-app.post('/{{table.getName()}}', async (req, res) => {
-    let body = req.body
+app.post('/{{table.getPluralName()}}', async (req, res) => {
+    const newItem = new {{table.getName()}}(req.body)
   
-    if ({%for field in table.getRequiredFields()%}!body.{{field.name}}{% if not loop.last %} || {% endif %} {%endfor%}) {
+    if (!newItem.hasRequiredPostFields()) {
         return res.status(400).json({ error: 'Required fields are missing' });
     }
     
     try {
-        const item = await post{{table.getName()}}(body);
+        const item = await post{{table.getPluralName()}}(newItem.getPostDict());
         res.status(201).json({ message: 'item added successfully', item });
         return item
     } catch (error) {
@@ -57,21 +58,21 @@ app.post('/{{table.getName()}}', async (req, res) => {
 });
 
 
-async function getAll{{table.getName()}}(query={}){
-    const result = await {{table.getName()}}.find(query).toArray();
+async function getAll{{table.getPluralName()}}(query={}){
+    const result = await {{table.getPluralName()}}.find(query).toArray();
     console.log("all items: ", result)
     return result   
 }
 
 
-app.get('/{{table.getName()}}', async (req, res) => {
+app.get('/{{table.getPluralName()}}', async (req, res) => {
     const query = req.query;
     if(query._id){
         query._id = new ObjectId(query._id)
     }
 
     try {
-        const foundItems = await getAll{{table.getName()}}(query);
+        const foundItems = await getAll{{table.getPluralName()}}(query);
         res.status(201).json({ message: 'items grabbed', foundItems });
         return foundItems;
     } catch (error) {
@@ -80,14 +81,14 @@ app.get('/{{table.getName()}}', async (req, res) => {
 });
 
 
-async function update{{table.getName()}}(filter, updateDoc){
-    const result = await {{table.getName()}}.updateOne(filter, updateDoc);
+async function update{{table.getPluralName()}}(filter, updateDoc){
+    const result = await {{table.getPluralName()}}.updateOne(filter, updateDoc);
     console.log(`${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`);
     return result
 }
 
 
-app.put('/{{table.getName()}}', async (req, res) => {
+app.put('/{{table.getPluralName()}}', async (req, res) => {
     const updateDoc  = {$set: req.body};
     const query = req.query
 
@@ -96,7 +97,7 @@ app.put('/{{table.getName()}}', async (req, res) => {
     }
 
     try {
-        const result = await update{{table.getName()}}(query, updateDoc);
+        const result = await update{{table.getPluralName()}}(query, updateDoc);
         res.status(200).json({ matchedCount: result.matchedCount, modifiedCount: result.modifiedCount });
     } catch (error) {
         console.log("Error: " + error)
@@ -105,13 +106,13 @@ app.put('/{{table.getName()}}', async (req, res) => {
 });
 
 {%if not table.excludeDelete()%}
-async function delete{{table.getName()}}(filter) {
-    const result = await {{table.getName()}}.deleteOne(filter);
+async function delete{{table.getPluralName()}}(filter) {
+    const result = await {{table.getPluralName()}}.deleteOne(filter);
     console.log(`${result.deletedCount} document(s) deleted`);
     return result;
 }
 
-app.delete('/{{table.getName()}}', async (req, res) => {
+app.delete('/{{table.getPluralName()}}', async (req, res) => {
     const query = req.query;
 
     if (query._id) {
@@ -119,7 +120,7 @@ app.delete('/{{table.getName()}}', async (req, res) => {
     }
 
     try {
-        const result = await delete{{table.getName()}}(query);
+        const result = await delete{{table.getPluralName()}}(query);
         res.status(200).json({ deletedCount: result.deletedCount });
     } catch (error) {
         console.log("Error: " + error);

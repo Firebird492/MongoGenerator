@@ -1,28 +1,38 @@
 {
     "tables": [
         {
-            "name": "MenuItems",
+            "name": {
+                    "name": "MenuItem",
+                    "plural": "MenuItems"    
+                },
             "noDelete": true,
             "fields": [
                 {
                     "name": "name",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "str"
                 },
                 {
                     "name": "price",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "float"
                 },
                 {
-                    "name": "allergen"
+                    "name": "allergen",
+                    "type": "str"
                 },
                 {
                     "name": "description",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "str"
                 }
             ]
         },
         {
-            "name": "Orders",
+            "name": {
+                "name":"Order",
+                "plural": "Orders"
+                    },
             "noDelete": true,
             "fields": [
                 {
@@ -31,21 +41,25 @@
                 },
                 {
                     "name": "orderTime",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "str"
                 },
                 {
                     "name": "pickupLocation"
                 },
                 {
                     "name": "items",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "array"
                 },
                 {
                     "name": "costOfItems",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "float"
                 },
                 {
-                    "name": "tip"
+                    "name": "tip",
+                    "type": "float"
                 },
                 {
                     "name": "completed"
@@ -54,7 +68,7 @@
             ]
         },
         {
-            "name": "Accounts",
+            "name": {"name": "Account", "plural":"Accounts"},
             "noDelete": true,
             "fields": [
                 {
@@ -63,42 +77,51 @@
                 },
                 {
                     "name": "email",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "str"
                 },
                 {
-                    "name": "phone"
+                    "name": "phone",
+                    "type": "str"
                 },
                 {
                     "name": "password",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "str"
                 },
                 {
-                    "name": "accessLevel"
+                    "name": "accessLevel",
+                    "type": "int"
                 },
                 {
                     "name": "cart",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "array"
                 }
             ]
         },
         {
-            "name": "PickupLocation",
+            "name": {"name":"PickupLocation", "plural":"PickupLocations"},
             "noDelete": true,
             "fields": [
                 {
                     "name": "address",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "str"
                 },
                 {
                     "name": "contactInfo",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "str"
                 },
                 {
                     "name": "name",
-                    "isRequired": true
+                    "isRequired": true,
+                    "type": "str"
                 },
                 {
-                    "name": "active"
+                    "name": "active",
+                    "type": "bool"
                 }
             ]
         }
