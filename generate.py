@@ -25,3 +25,10 @@ template = env.get_template('MongoModelsTemplate.jinja')
 output = template.render(Service = service)
 with open("renders/models.js", 'w') as f:
     print(output, file = f)
+
+
+# models test
+template = env.get_template('ModelsTestTemplate.jinja')
+output = template.render(Service = service)
+with open("renders/models_test.js", 'w') as f:
+    print(output, file = f)

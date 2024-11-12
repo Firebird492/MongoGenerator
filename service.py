@@ -3,23 +3,50 @@ class Field:
     def __init__(self, json: dict) -> None:
         self.name = json["name"]
         self.isRequired = json.get("isRequired", False)
-        self.type = json.get("type", "NA")
+        self.type = json["type"]
 
         defaults = {
-            "str": "''",
+            "str": "",
             "int": -1,
             "float": -1,
             "array": "[]",
-            "bool": "false",
-            "NA": "null",
+            "bool": False,
         }
-        self.default = defaults[self.type] 
+        self.default = json.get("default", defaults[self.type] )
+        self.example = json.get("example", None)
 
     def getName(self):
         return self.name
     
     def getDefault(self):
+        if self.type == "str" and self.default != "null":
+            return f'"{self.default}"'
+        if self.type == "bool":
+            if self.default == True:
+                return "true"
+            else:
+                return "false"
         return self.default
+    
+    def getExample(self, seed: int):
+        if self.example:
+            return self.example[seed%3]
+        if self.type == "int":
+            return seed
+        if self.type == "str":
+            return f'"example{str(seed)}"'
+        if self.type == "float":
+            return seed * 1.2
+        if self.type == "array":
+            ar = []
+            for i in range(3):
+                ar.append(f"arrayVal{str(seed+i)}")
+            return ar
+        if self.type == "bool":
+            if seed % 2:
+                return True
+            return False
+        raise Exception("Not valid Type")
 
 
 

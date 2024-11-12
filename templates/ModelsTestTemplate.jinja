@@ -1,0 +1,46 @@
+const { {%for table in Service.getTables()%}{{table.getName()}}{% if not loop.last %}, {% endif %}{%endfor%} } = require("./models.js")
+const assert = require("assert");
+
+{%for table in Service.getTables()%}
+function testCreate{{table.getName()}}(){
+    const exampleItem = {  
+        _id : 1,{%for field in table.getFields()%}
+        {{field.getName()}} : {{field.getExample(1)}}{% if not loop.last %}, {% endif %}{%endfor%}
+    };
+    const item = new {{table.getName()}}(exampleItem);
+    
+    assert.strictEqual(item._id, exampleItem._id, "id should equal exampleItem.id");{%for field in table.getFields()%}
+    assert.strictEqual(item.{{field.getName()}}, exampleItem.{{field.getName()}}, "{{field.getName()}} should equal exampleItem.{{field.getName()}}");{%endfor%}
+}
+
+
+function testCreateEmpty{{table.getName()}}(){
+    const item = new {{table.getName()}}({});
+    {%for field in table.getFields()%}
+    assert.strictEqual(item.{{field.getName()}}, {{field.getDefault()}}, '{{field.getName()}} should be {{field.getDefault()}}');{%endfor%}
+}
+
+
+function testCreate{{table.getName()}}WithNullInput(){
+    const exampleItem = {  
+        _id : null,{%for field in table.getFields()%}
+        {{field.getName()}} : null{% if not loop.last %}, {% endif %}{%endfor%}
+    };
+    const item = new {{table.getName()}}(exampleItem);
+    
+    assert.strictEqual(menuItem._id, null, "id should be null");{%for field in table.getFields()%}
+    assert.strictEqual(item.{{field.getName()}}, {{field.getDefault()}}, '{{field.getName()}} should be {{field.getDefault()}}');{%endfor%}
+}
+
+{%endfor%}
+
+
+function runTests(){
+    {%for table in Service.getTables()%}
+    testCreate{{table.getName()}}();
+    testCreateEmpty{{table.getName()}}();
+    testCreate{{table.getName()}}WithNullInput();{%endfor%}
+    console.log("tests passed");
+}
+
+runTests();
