@@ -29,19 +29,19 @@ if (!database) {
 // get to mongo connection
 const myDB = client.db(database);
 {%for table in Service.getTables()%}
-const {{table.getPluralName()}} = myDB.collection("{{table.getPluralName()}}");{%endfor%}
+const {{table.getCamelPluralName()}} = myDB.collection("{{table.getCamelPluralName()}}");{%endfor%}
 
 {%for table in Service.getTables()%}
 
 async function post{{table.getPluralName()}}(body){
-    const result = await {{table.getPluralName()}}.insertOne(body);
+    const result = await {{table.getCamelPluralName()}}.insertOne(body);
     console.log(
-        `new item in {{table.getPluralName()}} created with the _id: ${result.insertedId}`,
+        `new item in {{table.getCamelPluralName()}} created with the _id: ${result.insertedId}`,
     );
     return result.insertedId
 }
 
-app.post('/{{table.getPluralName()}}', async (req, res) => {
+app.post('/{{table.getCamelPluralName()}}', async (req, res) => {
     const newItem = new {{table.getName()}}(req.body)
   
     if (!newItem.hasRequiredPostFields()) {
@@ -59,13 +59,13 @@ app.post('/{{table.getPluralName()}}', async (req, res) => {
 
 
 async function getAll{{table.getPluralName()}}(query={}){
-    const result = await {{table.getPluralName()}}.find(query).toArray();
+    const result = await {{table.getCamelPluralName()}}.find(query).toArray();
     console.log("all items: ", result)
     return result   
 }
 
 
-app.get('/{{table.getPluralName()}}', async (req, res) => {
+app.get('/{{table.getCamelPluralName()}}', async (req, res) => {
     const query = req.query;
     if(query._id){
         query._id = new ObjectId(query._id)
@@ -82,13 +82,13 @@ app.get('/{{table.getPluralName()}}', async (req, res) => {
 
 
 async function update{{table.getPluralName()}}(filter, updateDoc){
-    const result = await {{table.getPluralName()}}.updateOne(filter, updateDoc);
+    const result = await {{table.getCamelPluralName()}}.updateOne(filter, updateDoc);
     console.log(`${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`);
     return result
 }
 
 
-app.put('/{{table.getPluralName()}}', async (req, res) => {
+app.put('/{{table.getCamelPluralName()}}', async (req, res) => {
     const updateDoc  = {$set: req.body};
     const query = req.query
 
@@ -112,7 +112,7 @@ async function delete{{table.getPluralName()}}(filter) {
     return result;
 }
 
-app.delete('/{{table.getPluralName()}}', async (req, res) => {
+app.delete('/{{table.getCamelPluralName()}}', async (req, res) => {
     const query = req.query;
 
     if (query._id) {

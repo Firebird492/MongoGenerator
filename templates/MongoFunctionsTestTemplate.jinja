@@ -1,0 +1,153 @@
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const assert = require("assert");
+require('dotenv').config();
+
+const BASE_URL = "http://localhost:3000"
+
+
+function areArraysEqual(arr1, arr2) {
+  if (arr1.length !== arr2.length) return false;
+  
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) return false;
+  }
+  
+  return true;
+}
+
+
+// Helper function to generate random data for testing
+async function postData(url, inputBody) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(inputBody)
+        });
+
+        // Parse the response as JSON
+        const data = await response.json();
+
+        // Return the data for further use
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error; // Rethrow the error to handle it in the calling code
+    }
+}
+
+
+async function fetchData(url, query="") {
+    try {
+        const response = await fetch(url, {
+            method: 'GET', 
+        });
+
+        if (!response.ok) {
+            console.log(response.status)
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await response.json();
+
+        return data; // Return the data for further use
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        throw error; // Rethrow the error to handle it in the calling code
+    }
+}
+
+
+async function updateData(url, inputBody) {
+    try {
+        const response = await fetch(url, {
+            method: 'PUT', // Use PUT method for updating data
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(inputBody)
+        });
+
+        // Parse the response as JSON
+        const data = await response.json();
+        // Return the data for further use
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error; // Rethrow the error to handle it in the calling code
+    }
+}
+
+
+{%for table in Service.getTables()%}
+async function testPost{{table.getName()}}(){
+    const url = BASE_URL + '/{{table.getCamelPluralName()}}';
+    const body = { {%for field in table.getFields()%}
+        {{field.getName()}}: {{field.getExample(0)}},{%endfor%}
+    };
+    result = await postData(url, body);
+    assert.strictEqual(result.message, 'item added successfully');
+    const insertedId = result.item;
+    result = await fetchData(url + '?_id='+ insertedId)
+    assert.strictEqual(result.foundItems[0]._id, insertedId ){%for field in table.getNotArrayFields()%}
+    assert.strictEqual(result.foundItems[0].{{field.getName()}}, body.{{field.getName()}} );{%endfor%}
+    {%for field in table.getArrayFields()%}
+    assert.strictEqual(areArraysEqual(result.foundItems[0].{{field.getName()}}, body.{{field.getName()}}), true ); {%endfor%}
+}
+
+
+async function testPostEmpty{{table.getName()}}(){
+    const url = BASE_URL + '/{{table.getCamelPluralName()}}';
+    const body = {};
+    result = await postData(url, body);
+    assert.strictEqual(result.error, 'Required fields are missing');
+}
+
+
+async function testPostIncomplete{{table.getName()}}(){
+    const url = BASE_URL + '/{{table.getCamelPluralName()}}';
+    const body = { {%for field in table.getNotRequiredFields()%}
+        {{field.getName()}}: {{field.getExample(0)}},{%endfor%}
+    };
+    result = await postData(url, body);
+    assert.strictEqual(result.error, 'Required fields are missing');
+}
+
+
+async function testUpdate{{table.getName()}}(){
+    const url = BASE_URL + '/{{table.getCamelPluralName()}}';
+    const body = { {%for field in table.getFields()%}
+        {{field.getName()}}: {{field.getExample(0)}},{%endfor%}
+    };
+    result = await postData(url, body);
+    assert.strictEqual(result.message, 'item added successfully');
+    const insertedId = result.item;
+    const updateItem = { {%for field in table.getFields()%}
+        {{field.getName()}}: {{field.getExample(1)}},{%endfor%}
+    };
+    await updateData(url + '?_id='+ insertedId, updateItem)
+    result = await fetchData(url + '?_id='+ insertedId)
+    assert.strictEqual(result.foundItems[0]._id, insertedId ){%for field in table.getNotArrayFields()%}
+    assert.strictEqual(result.foundItems[0].{{field.getName()}}, updateItem.{{field.getName()}}){%endfor%}
+        {%for field in table.getArrayFields()%}
+    assert.strictEqual(areArraysEqual(result.foundItems[0].{{field.getName()}}, updateItem.{{field.getName()}}), true ); {%endfor%}
+}
+{%endfor%}
+
+
+
+async function runTests(){
+    {%for table in Service.getTables()%}
+    await testPost{{table.getName()}}()
+    await testPostEmpty{{table.getName()}}()
+    await testPostIncomplete{{table.getName()}}()
+    await testUpdate{{table.getName()}}()
+    {%endfor%}
+    console.log("all tests passed")
+}
+
+
+runTests();
+

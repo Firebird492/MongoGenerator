@@ -20,7 +20,7 @@ class {{table.getName()}} extends TableObject{
     constructor(data) {
         super(data)
         this._id = data._id || null;
-        {%for field in table.getFields()%}this.{{field.getName()}} = data.{{field.getName()}} || {{field.getDefault()}};
+        {%for field in table.getFields()%}this.{{field.getName()}} = (data.{{field.getName()}} !== undefined && data.{{field.getName()}} !== null) ? data.{{field.getName()}} : {{field.getDefault()}};
         {%endfor%}
     }
 

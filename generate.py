@@ -14,10 +14,11 @@ with open('inputs/tmc.json', 'r') as file:
 
 service = Service(jsonData)
 env = Environment(loader = FileSystemLoader('templates'))
+
 # mongo functions
 template = env.get_template('MongoFunctionsTemplate.jinja')
 output = template.render(Service = service)
-with open("renders/outputFileName.js", 'w') as f:
+with open("renders/mongo_functions.js", 'w') as f:
     print(output, file = f)
 
 # models
@@ -31,4 +32,18 @@ with open("renders/models.js", 'w') as f:
 template = env.get_template('ModelsTestTemplate.jinja')
 output = template.render(Service = service)
 with open("renders/models_test.js", 'w') as f:
+    print(output, file = f)
+
+
+# mongo functions test
+template = env.get_template('MongoFunctionsTestTemplate.jinja')
+output = template.render(Service = service)
+with open("renders/mongo_functions_test.js", 'w') as f:
+    print(output, file = f)
+
+
+# package.json
+template = env.get_template('PackageTemplate.jinja')
+output = template.render(Service = service)
+with open("renders/package.json", 'w') as f:
     print(output, file = f)

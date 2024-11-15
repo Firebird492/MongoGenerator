@@ -44,10 +44,14 @@ class Field:
             return ar
         if self.type == "bool":
             if seed % 2:
-                return True
-            return False
+                return "true"
+            return "false"
         raise Exception("Not valid Type")
 
+    def isNumberField(self):
+        if self.type == "float" or self.type == "int":
+            return True
+        return False
 
 
 class Table:
@@ -68,6 +72,10 @@ class Table:
     def getPluralName(self):
         return self.name["plural"]
     
+    def getCamelPluralName(self):
+        plural = self.getPluralName()
+        return plural[0].lower() + plural[1:]
+    
     def getFields(self):
         return self.fields
     
@@ -76,7 +84,15 @@ class Table:
     
     def getRequiredFields(self):
         return [f for f in self.fields if f.isRequired]
-
+    
+    def getNotRequiredFields(self):
+        return [f for f in self.fields if not f.isRequired]
+    
+    def getNotArrayFields(self):
+        return [f for f in self.fields if not f.type == 'array']
+    
+    def getArrayFields(self):
+        return [f for f in self.fields if f.type == 'array']
 
 
 class Service:
