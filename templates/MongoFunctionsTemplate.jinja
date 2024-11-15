@@ -53,6 +53,7 @@ app.post('/{{table.getCamelPluralName()}}', async (req, res) => {
         res.status(201).json({ message: 'item added successfully', item });
         return item
     } catch (error) {
+        console.log("Error: " + error)
         res.status(500).json({ error: 'Failed to add item' });
     }
 });
@@ -76,6 +77,7 @@ app.get('/{{table.getCamelPluralName()}}', async (req, res) => {
         res.status(201).json({ message: 'items grabbed', foundItems });
         return foundItems;
     } catch (error) {
+        console.log("Error: " + error)
         res.status(500).json({ error: 'Failed to get items' });
     }
 });
