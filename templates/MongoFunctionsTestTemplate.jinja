@@ -39,7 +39,7 @@ async function postData(url, inputBody) {
 }
 
 
-async function fetchData(url, query="") {
+async function fetchData(url) {
     try {
         const response = await fetch(url, {
             method: 'GET', 
