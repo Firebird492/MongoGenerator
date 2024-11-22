@@ -45,8 +45,7 @@ async function fetchData(url, query="") {
             method: 'GET', 
         });
 
-        if (!response.ok) {
-            console.log(response.status)
+        if (!response) {
             throw new Error('Network response was not ok');
         }
 
@@ -134,6 +133,18 @@ async function testUpdate{{table.getName()}}(){
         {%for field in table.getArrayFields()%}
     assert.strictEqual(areArraysEqual(result.foundItems[0].{{field.getName()}}, updateItem.{{field.getName()}}), true ); {%endfor%}
 }
+
+async function test{{table.getName()}}WithBadId(){
+    const url = BASE_URL + '/{{table.getCamelPluralName()}}';
+    result = await fetchData(url + '?_id='+ "abababab")
+    assert.strictEqual(result.error, "Invalid _id format" )
+    result = await fetchData(url + '?_id='+ "qwertyuioplkjhgfdsazxcvb")
+    assert.strictEqual(result.error, "Invalid _id format" )
+    await updateData(url + '?_id='+ "abababab", {})
+    assert.strictEqual(result.error, "Invalid _id format" )
+    await updateData(url + '?_id='+ "qwertyuioplkjhgfdsazxcvb", {})
+    assert.strictEqual(result.error, "Invalid _id format" )
+}
 {%endfor%}
 
 
@@ -144,6 +155,7 @@ async function runTests(){
     await testPostEmpty{{table.getName()}}()
     await testPostIncomplete{{table.getName()}}()
     await testUpdate{{table.getName()}}()
+    await test{{table.getName()}}WithBadId()
     {%endfor%}
     console.log("all tests passed")
 }
